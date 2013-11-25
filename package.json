@@ -1,0 +1,13 @@
+{
+	"name": "ThumborUrlBuilder",
+	"version": "0.1.0",
+	"dependencies": {
+		"crypto": "0.0.3"
+	},
+	"author": {
+		"name": "David Caramelo",
+		"url" : "fr.viadeo.com/fr/profile/david.caramelo1"
+	},
+	"readme": "Client Thumbor for Node JS",
+	"readmeFilename": "README.md"
+}
