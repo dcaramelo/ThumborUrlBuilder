@@ -1,5 +1,5 @@
 {
-	"name": "ThumborUrlBuilder",
+	"name": "thumbor-url-builder",
 	"version": "0.1.0",
 	"dependencies": {
 		"crypto": "0.0.3"
