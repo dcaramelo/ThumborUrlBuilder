@@ -1,5 +1,9 @@
 var crypto = require('crypto');
 
+/**
+ * @param {[type]} securityKey
+ * @param {[type]} thumborServerUrl
+ */
 function ThumborUrlBuilder(securityKey, thumborServerUrl) {
   'use strict';
 
@@ -30,12 +34,19 @@ ThumborUrlBuilder.prototype = {
   CENTER: 'center',
   LEFT: 'left',
 
+  /**
+   * Set path of image
+   * @param {String} imagePath [description]
+   */
   setImagePath: function(imagePath) {
     this.imagePath = (imagePath.charAt(0) === '/') ?
       imagePath.substring(1, imagePath.length) : imagePath;
     return this;
   },
-
+  /**
+   * Converts operation array to string
+   * @return {String}
+   */
   getOperationPath: function() {
     var parts = this.urlParts();
 
@@ -45,7 +56,14 @@ ThumborUrlBuilder.prototype = {
 
     return parts.join('/') + '/';
   },
-
+  /**
+   * Build operation array
+   *
+   * @TODO Should be refactored so that strings are generated in the
+   * commands as opposed to in 1 massive function
+   *
+   * @return {Array}
+   */
   urlParts: function() {
     if (!this.imagePath) {
       throw new Error('The image url can\'t be null or empty.');
@@ -112,35 +130,59 @@ ThumborUrlBuilder.prototype = {
 
     return parts;
   },
-
+  /**
+   * Resize the image to the specified dimensions. Overrides any previous call
+   * to `fitIn` or `resize`.
+   *
+   * Use a value of 0 for proportional resizing. E.g. for a 640 x 480 image,
+   * `.resize(320, 0)` yields a 320 x 240 thumbnail.
+   *
+   * Use a value of 'orig' to use an original image dimension. E.g. for a 640
+   * x 480 image, `.resize(320, 'orig')` yields a 320 x 480 thumbnail.
+   * @param  {String} width
+   * @param  {String} height
+   */
   resize: function(width, height) {
     this.width = width;
     this.height = height;
     return this;
   },
 
-  smartCrop: function(bool) {
-    this.smart = bool;
+  smartCrop: function(smartCrop) {
+    this.smart = smartCrop;
     return this;
   },
-
+  /**
+   * Resize the image to fit in a box of the specified dimensions. Overrides
+   * any previous call to `fitIn` or `resize`.
+   *
+   * @param  {String} width
+   * @param  {String} height
+   */
   fitIn: function(width, height) {
     this.width = width;
     this.height = height;
     this.fitInFlag = true;
     return this;
   },
-
+  /**
+   * Flip image horizontally
+   */
   flipHorizontally: function() {
     this.withFlipHorizontally = true;
     return this;
   },
-
+  /**
+   * Flip image vertically
+   */
   flipVertically: function() {
     this.withFlipVertically = true;
     return this;
   },
-
+  /**
+   * Specify horizontal alignment used if width is altered due to cropping
+   * @param  {String} halign 'left', 'center', 'right'
+   */
   halign: function(halign) {
     console.log('halign: ', halign);
     if (
@@ -154,7 +196,10 @@ ThumborUrlBuilder.prototype = {
     }
     return this;
   },
-
+  /**
+   * Specify vertical alignment used if height is altered due to cropping
+   * @param  {String} valign 'top', 'middle', 'bottom'
+   */
   valign: function(valign) {
     if (
       valign === this.TOP ||
@@ -167,17 +212,31 @@ ThumborUrlBuilder.prototype = {
     }
     return this;
   },
-
-  metaDataOnly: function() {
-    this.meta = true;
+  /**
+   * Specify that JSON metadata should be returned instead of the thumbnailed
+   * image.
+   * @param  {Boolean} metaDataOnly [description]
+   */
+  metaDataOnly: function(metaDataOnly) {
+    this.meta = metaDataOnly;
     return this;
   },
-
+  /**
+   * Append a filter, e.g. quality(80)
+   * @param  {String} filterCall
+   */
   filter: function(filterCall) {
     this.filtersCalls.push(filterCall);
     return this;
   },
-
+  /**
+   * Manually specify crop window.
+   * @param  {Integer} left
+   * @param  {Integer} top
+   * @param  {Integer} right
+   * @param  {Integer} bottom
+   * @return {[type]}
+   */
   crop: function(left, top, right, bottom) {
     if (left > 0 && top > 0 && right > 0 && bottom > 0) {
       this.cropValues = {
@@ -189,7 +248,10 @@ ThumborUrlBuilder.prototype = {
     }
     return this;
   },
-
+  /**
+   * Combine image url and operations with secure and unsecure (unsafe) paths
+   * @return {String}
+   */
   buildUrl: function() {
 
     var operation = this.getOperationPath();
