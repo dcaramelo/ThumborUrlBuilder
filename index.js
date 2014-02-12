@@ -48,7 +48,7 @@ ThumborUrlBuilder.prototype = {
 
   urlParts: function() {
     if (!this.imagePath) {
-      throw Error('The image url can\'t be null or empty.');
+      throw new Error('The image url can\'t be null or empty.');
     }
 
     var parts = [];
@@ -58,10 +58,25 @@ ThumborUrlBuilder.prototype = {
     }
 
     if (this.cropValues) {
-      parts.push(this.cropValues.left + 'x' + this.cropValues.top + ':' + this.cropValues.right + 'x' + this.cropValues.bottom);
+      parts.push(
+        this.cropValues.left +
+        'x' + this.cropValues.top +
+        ':' + this.cropValues.right +
+        'x' + this.cropValues.bottom
+      );
     }
 
-    if (this.width || this.height || this.withFlipHorizontally || this.withFlipVertically) {
+    if (this.fitInFlag) {
+      parts.push('fit-in');
+    }
+
+
+    if (
+      this.width ||
+      this.height ||
+      this.withFlipHorizontally ||
+      this.withFlipVertically
+    ) {
       var sizeString = '';
 
       if (this.withFlipHorizontally) {
@@ -72,7 +87,7 @@ ThumborUrlBuilder.prototype = {
       sizeString += 'x';
 
       if (this.withFlipVertically) {
-        sizeString += "-";
+        sizeString += '-';
       }
       sizeString += this.height;
 
@@ -182,14 +197,22 @@ ThumborUrlBuilder.prototype = {
 
     if (this.THUMBOR_SECURITY_KEY) {
 
-      var key = crypto.createHmac("sha1", this.THUMBOR_SECURITY_KEY).update(operation + this.imagePath).digest("base64");
-      key = key.replace(/\+/g, "-").replace(/\//g, "_");
+      var key = crypto
+        .createHmac('sha1', this.THUMBOR_SECURITY_KEY)
+        .update(operation + this.imagePath)
+        .digest('base64');
 
-      return this.THUMBOR_URL_SERVER + '/' + key + '/' + operation + this.imagePath;
+      key = key.replace(/\+/g, '-').replace(/\//g, '_');
+
+      return this.THUMBOR_URL_SERVER +
+        '/' + key +
+        '/' + operation +
+        this.imagePath;
+
     } else {
       return this.THUMBOR_URL_SERVER + '/unsafe/' + operation + this.imagePath;
     }
   }
-}
+};
 
 module.exports = ThumborUrlBuilder;
