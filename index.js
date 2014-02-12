@@ -1,43 +1,64 @@
 var crypto = require('crypto');
+
 function ThumborUrlBuilder(securityKey, thumborServerUrl) {
-  'use strict'
+  'use strict';
 
   this.THUMBOR_SECURITY_KEY = securityKey;
-  this.THUMBOR_URL_SERVER   = thumborServerUrl;
+  this.THUMBOR_URL_SERVER = thumborServerUrl;
 
-  this.urlPath              = '';
-  this.hasResize            = false;
-  this.isSmart              = false;
-  this.resizeWidth          = 0;
-  this.resizeHeight         = 0;
+  this.imagePath = '';
+  this.width = 0;
+  this.height = 0;
+  this.smart = false;
+  this.fitInFlag = false;
+  this.withFlipHorizontally = false;
+  this.withFlipVertically = false;
+  this.halignValue = null;
+  this.valignValue = null;
+  this.cropValues = null;
+  this.meta = false;
+  this.filtersCalls = [];
 }
 
 ThumborUrlBuilder.prototype = {
 
-  setUrlPath: function(urlPath) {
+  TOP: 'top',
+  MIDDLE: 'middle',
+  BOTTOM: 'bottom',
 
-    this.urlPath = (urlPath.charAt(0)) == '/' ? urlPath.substring(1,urlPath.lenght) : urlPath;
+  RIGHT: 'right',
+  CENTER: 'center',
+  LEFT: 'left',
+
+  setImagePath: function(imagePath) {
+    this.imagePath = (imagePath.charAt(0) === '/') ?
+      imagePath.substring(1, imagePath.length) : imagePath;
     return this;
   },
 
-  requestPath: function() {
-      var parts = this.urlParts();
-      return parts.join('/');
+  getOperationPath: function() {
+    var parts = this.urlParts();
+
+    if (0 === parts.length) {
+      return '';
+    }
+
+    return parts.join('/') + '/';
   },
 
   urlParts: function() {
-    if (!this.urlPath) {
+    if (!this.imagePath) {
       throw Error('The image url can\'t be null or empty.');
     }
 
     var parts = [];
 
     if (this.meta) {
-        parts.push('meta');
+      parts.push('meta');
     }
 
     if (this.cropValues) {
-        parts.push(this.cropValues.left + 'x' + this.cropValues.top + ':' + this.cropValues.right + 'x' + this.cropValues.bottom);
+      parts.push(this.cropValues.left + 'x' + this.cropValues.top + ':' + this.cropValues.right + 'x' + this.cropValues.bottom);
     }
 
     if (this.width || this.height || this.withFlipHorizontally || this.withFlipVertically) {
@@ -58,6 +79,22 @@ ThumborUrlBuilder.prototype = {
       parts.push(sizeString);
     }
 
+    if (this.halignValue) {
+      parts.push(this.halignValue);
+    }
+
+    if (this.valignValue) {
+      parts.push(this.valignValue);
+    }
+
+    if (this.smart) {
+      parts.push('smart');
+    }
+
+    if (this.filtersCalls.length) {
+      parts.push('filters:' + this.filtersCalls.join(':'));
+    }
+
     return parts;
   },
 
@@ -67,8 +104,8 @@ ThumborUrlBuilder.prototype = {
     return this;
   },
 
-  smart: function() {
-    this.smart = true;
+  smartCrop: function(bool) {
+    this.smart = bool;
     return this;
   },
 
@@ -90,26 +127,35 @@ ThumborUrlBuilder.prototype = {
   },
 
   halign: function(halign) {
-      if (halign === this.LEFT || halign === this.RIGHT || halign === this.CENTER) {
-          this.halignValue = halign;
-      } else {
-          throw Error('Horizontal align must be left, right or center.');
-      }
-      return this;
+    console.log('halign: ', halign);
+    if (
+      halign === this.LEFT ||
+      halign === this.RIGHT ||
+      halign === this.CENTER
+    ) {
+      this.halignValue = halign;
+    } else {
+      throw new Error('Horizontal align must be left, right or center.');
+    }
+    return this;
   },
 
   valign: function(valign) {
-      if (valign === this.TOP || valign === this.BOTTOM || valign === this.MIDDLE) {
-          this.valignValue = valign;
-      } else {
-          throw Error('Vertical align must be top, bottom or middle.');
-      }
-      return this;
+    if (
+      valign === this.TOP ||
+      valign === this.BOTTOM ||
+      valign === this.MIDDLE
+    ) {
+      this.valignValue = valign;
+    } else {
+      throw new Error('Vertical align must be top, bottom or middle.');
+    }
+    return this;
   },
 
   metaDataOnly: function() {
-      this.meta = true;
-      return this;
+    this.meta = true;
+    return this;
   },
 
   filter: function(filterCall) {
@@ -119,26 +165,29 @@ ThumborUrlBuilder.prototype = {
 
   crop: function(left, top, right, bottom) {
     if (left > 0 && top > 0 && right > 0 && bottom > 0) {
-      this.cropValues = {left: left, top: top, right: right, bottom: bottom};
+      this.cropValues = {
+        left: left,
+        top: top,
+        right: right,
+        bottom: bottom
+      };
     }
     return this;
   },
 
   buildUrl: function() {
 
-    var operation = '';
-
-    operation = this.requestPath() + '/';
+    var operation = this.getOperationPath();
 
 
     if (this.THUMBOR_SECURITY_KEY) {
 
-      var key = crypto.createHmac("sha1", this.THUMBOR_SECURITY_KEY).update(operation + this.urlPath).digest("base64");
+      var key = crypto.createHmac("sha1", this.THUMBOR_SECURITY_KEY).update(operation + this.imagePath).digest("base64");
       key = key.replace(/\+/g, "-").replace(/\//g, "_");
 
-      return this.THUMBOR_URL_SERVER + '/' + key + '/' + operation + this.urlPath;
+      return this.THUMBOR_URL_SERVER + '/' + key + '/' + operation + this.imagePath;
     } else {
-      return this.THUMBOR_URL_SERVER + '/unsafe/' + operation + this.urlPath;
+      return this.THUMBOR_URL_SERVER + '/unsafe/' + operation + this.imagePath;
     }
   }
 }
