@@ -1,4 +1,7 @@
-var crypto = require('crypto');
+'use strict';
+
+var crypto = require('crypto-js');
+var encode = require('crypto-js/enc-base64');
 
 /**
  * @param {[type]} securityKey
@@ -260,7 +263,7 @@ ThumborUrlBuilder.prototype = {
     if (this.THUMBOR_SECURITY_KEY) {
 
       var key = crypto
-        .createHmac('sha1', this.THUMBOR_SECURITY_KEY)
+        .HmacSHA1(this.THUMBOR_SECURITY_KEY)
         .update(operation + this.imagePath)
         .digest('base64');
 
