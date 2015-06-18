@@ -262,10 +262,8 @@ ThumborUrlBuilder.prototype = {
 
     if (this.THUMBOR_SECURITY_KEY) {
 
-      var key = crypto
-        .HmacSHA1(this.THUMBOR_SECURITY_KEY)
-        .update(operation + this.imagePath)
-        .digest('base64');
+      var key = crypto.HmacSHA1(operation + this.imagePath, this.THUMBOR_SECURITY_KEY);
+      key = crypto.enc.Base64.stringify(key);
 
       key = key.replace(/\+/g, '-').replace(/\//g, '_');
 
