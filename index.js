@@ -18,6 +18,7 @@ function ThumborUrlBuilder(securityKey, thumborServerUrl) {
   this.height = 0;
   this.smart = false;
   this.fitInFlag = false;
+  this.fullFitInFlag = false;
   this.withFlipHorizontally = false;
   this.withFlipVertically = false;
   this.halignValue = null;
@@ -89,6 +90,10 @@ ThumborUrlBuilder.prototype = {
 
     if (this.fitInFlag) {
       parts.push('fit-in');
+    }
+
+    if (this.fullFitInFlag) {
+      parts.push('full-fit-in');
     }
 
 
@@ -166,6 +171,19 @@ ThumborUrlBuilder.prototype = {
     this.width = width;
     this.height = height;
     this.fitInFlag = true;
+    return this;
+  },
+  /**
+   * Resize the image to fit in a box of the specified dimensions. Overrides
+   * any previous call to `fitIn` or `resize`.
+   *
+   * @param  {String} width
+   * @param  {String} height
+   */
+  fullFitIn: function(width, height) {
+    this.width = width;
+    this.height = height;
+    this.fullFitInFlag = true;
     return this;
   },
   /**
