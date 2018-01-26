@@ -1,5 +1,5 @@
 {
-  "name": "thumbor-url-builder",
+  "name": "@interencheres/thumbor-url-builder",
   "version": "0.1.1",
   "dependencies": {
     "crypto-js": "^3.1.5"
