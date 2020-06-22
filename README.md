@@ -15,7 +15,7 @@ npm install thumbor-url-builder --save
 // Your encryption key is not required, but your link will be unsafe.
 
 var ThumborUrlBuilder = require('thumbor-url-builder');
-var thumborURL = new ThumborUrlBuilder('MY_KEY', 'http://myserver.thumbor.com');
+var thumborURL = new ThumborUrlBuilder('http://myserver.thumbor.com', 'MY_KEY');
 
 // Generate your url :
 

@@ -7,7 +7,7 @@ var encode = require('crypto-js/enc-base64');
  * @param {[type]} securityKey
  * @param {[type]} thumborServerUrl
  */
-function ThumborUrlBuilder(securityKey, thumborServerUrl) {
+function ThumborUrlBuilder(thumborServerUrl, securityKey) {
   'use strict';
 
   this.THUMBOR_SECURITY_KEY = securityKey;
