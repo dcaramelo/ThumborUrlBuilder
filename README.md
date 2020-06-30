@@ -19,7 +19,7 @@ HashFn returns the string hashed and base64url encoded. Depending on the library
 // Browser & NodeJS compatible
 var crypto = require('crypto-js');
 var hashFn = function (stringToHash, secret) {
-    var key = crypto.HmacSHA1(operation + this.imagePath, this.THUMBOR_SECURITY_KEY);
+    var key = crypto.HmacSHA1(stringToHash, secret);
     var hash = crypto.enc.Base64.stringify(key);
     return hash.replace(/\+/g, '-').replace(/\//g, '_');
 }
@@ -28,7 +28,7 @@ var hashFn = function (stringToHash, secret) {
 var crypto = require('crypto');
 var hashFn = function (stringToHash, secret) {
     var hmac = crypto.createHmac('sha1', secret);
-    hmac.update(operation + this.imagePath);
+    hmac.update(stringToHash);
     var hash = hmac.digest('base64');
     return hash.replace(/\+/g, '-').replace(/\//g, '_');
 }
