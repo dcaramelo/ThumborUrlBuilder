@@ -1,9 +1,6 @@
 {
-  "name": "thumbor-url-builder",
+  "name": "@interencheres/thumbor-url-buider",
   "version": "0.1.1",
-  "dependencies": {
-    "crypto-js": "^3.1.5"
-  },
   "author": {
     "name": "David Caramelo",
     "url": "fr.viadeo.com/fr/profile/david.caramelo1"
