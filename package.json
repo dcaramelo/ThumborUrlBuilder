@@ -2,7 +2,7 @@
   "name": "thumbor-url-builder",
   "version": "0.1.1",
   "dependencies": {
-    "crypto-js": "^3.1.5"
+    "crypto-js": "^4.2.0"
   },
   "author": {
     "name": "David Caramelo",
