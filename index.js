@@ -24,6 +24,8 @@ function ThumborUrlBuilder(securityKey, thumborServerUrl) {
   this.valignValue = null;
   this.cropValues = null;
   this.meta = false;
+  this.trimValue = false;
+  this.trimOrientation = '';
   this.filtersCalls = [];
 }
 
@@ -36,6 +38,9 @@ ThumborUrlBuilder.prototype = {
   RIGHT: 'right',
   CENTER: 'center',
   LEFT: 'left',
+
+  TOPLEFT: 'top-left',
+  BOTTOMRIGHT: 'bottom-right',
 
   /**
    * Set path of image
@@ -125,6 +130,14 @@ ThumborUrlBuilder.prototype = {
 
     if (this.smart) {
       parts.push('smart');
+    }
+
+    if (this.trimValue) {
+      let trimPart = 'trim';
+      if (this.trimOrientation) {
+        trimPart += ':' + this.trimOrientation;
+      }
+      parts.push(trimPart);
     }
 
     if (this.filtersCalls.length) {
@@ -248,6 +261,19 @@ ThumborUrlBuilder.prototype = {
         right: right,
         bottom: bottom
       };
+    }
+    return this;
+  },
+  trim: function(orientation) {
+    if (
+      orientation === undefined ||
+      orientation === this.TOPLEFT ||
+      orientation === this.BOTTOMRIGHT
+    ) {
+      this.trimValue = true;
+      this.trimOrientation = orientation;
+    } else {
+      throw new Error('Trim orientation must be null, top-left or bottom-right.');
     }
     return this;
   },
